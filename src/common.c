@@ -133,11 +133,12 @@ Errno type_of_file(const char *file_path, File_Type *ft)
 #ifdef _WIN32
     DWORD file_attributes = GetFileAttributesA(file_path);
     if (file_attributes == INVALID_FILE_ATTRIBUTES) { return ENODATA; }
-    if (file_attributes & FILE_ATTRIBUTE_NORMAL) {
-        *ft = FT_REGULAR;
-    } else if (file_attributes & FILE_ATTRIBUTE_DIRECTORY) {
+    if (file_attributes & FILE_ATTRIBUTE_DIRECTORY) {
         *ft = FT_DIRECTORY;
-    } else {
+    } else if ((file_attributes & FILE_ATTRIBUTE_NORMAL) |
+             (file_attributes & FILE_ATTRIBUTE_ARCHIVE)) {
+        *ft = FT_REGULAR;
+    }  else {
         *ft = FT_OTHER;
     }
 #else
